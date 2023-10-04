@@ -2,14 +2,15 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
     repositories {
-        maven {
-            url = uri("http://nexus-maven.south.rt.ru:8081/repository/maven-releases/")
-            isAllowInsecureProtocol = true
-        }
         mavenLocal()
         maven { url = uri("https://repo.spring.io/milestone") }
         maven { url = uri("https://repo.spring.io/snapshot") }
         mavenCentral()
+        gradlePluginPortal()
+        maven {
+            url = uri("http://repo1.maven.org/maven2")
+            isAllowInsecureProtocol = true
+        }
     }
 }
 
@@ -17,6 +18,7 @@ plugins {
     id("org.springframework.boot") version "3.2.0-SNAPSHOT"
     id("io.spring.dependency-management") version "1.1.3"
     kotlin("jvm") version "1.9.10"
+    kotlin("kapt") version "1.9.10"
     kotlin("plugin.spring") version "1.9.10"
     id("maven-publish")
 }
@@ -38,14 +40,15 @@ configurations {
 }
 
 repositories {
-    maven {
-        url = uri("http://nexus-maven.south.rt.ru/repository/maven-releases/")
-        isAllowInsecureProtocol = true
-    }
+    gradlePluginPortal()
     maven { url = uri("https://repo.spring.io/milestone") }
     maven { url = uri("https://repo.spring.io/snapshot") }
     mavenLocal()
     mavenCentral()
+    maven {
+        url = uri("http://repo1.maven.org/maven2")
+        isAllowInsecureProtocol = true
+    }
 }
 
 val kotlinCoroutinesVersion = "1.8.10"
@@ -56,9 +59,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.ws:spring-ws-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:$kotlinCoroutinesVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:$kotlinCoroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     annotationProcessor("org.jetbrains.kotlin:kotlin-reflect")
     compileOnly("org.jetbrains.kotlin:kotlin-reflect")
     /* LOMBOK */
