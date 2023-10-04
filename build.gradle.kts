@@ -69,7 +69,6 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.30")
 
     //OTHER
-    implementation("org.crm:kibana-module-async:v3.0.0")
     implementation("org.apache.commons:commons-lang3:3.13.0")
     implementation("jakarta.jws:jakarta.jws-api:3.0.0")
     implementation("jakarta.xml.ws:jakarta.xml.ws-api:4.0.0")
