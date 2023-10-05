@@ -64,7 +64,7 @@ class SoapWebClientHelper(val encoder: Jaxb2SoapEncoder, val decoder: Jaxb2SoapD
 
     fun <T> postSoapRequest(
         url: String,
-        headersConsumer: Consumer<HttpHeaders>,
+        headersConsumer: (HttpHeaders) -> Unit,
         request: Any,
         requestClass: Class<*>,
         responseClass: Class<T>,
@@ -83,7 +83,7 @@ class SoapWebClientHelper(val encoder: Jaxb2SoapEncoder, val decoder: Jaxb2SoapD
 
     fun <T> postSoapRequest(
         url: String,
-        headersConsumer: Consumer<HttpHeaders>,
+        headersConsumer: (HttpHeaders) -> Unit,
         request: Any,
         requestClass: Class<*>,
         responseClass: Class<T>,
@@ -104,7 +104,7 @@ class SoapWebClientHelper(val encoder: Jaxb2SoapEncoder, val decoder: Jaxb2SoapD
 
     fun <T> postSoapRequest(
         url: String,
-        headersConsumer: Consumer<HttpHeaders>,
+        headersConsumer: (HttpHeaders) -> Unit,
         request: Any,
         requestClass: Class<*>,
         responseClass: ParameterizedTypeReference<SoapEnvelopeResponse<T>>,
@@ -124,7 +124,7 @@ class SoapWebClientHelper(val encoder: Jaxb2SoapEncoder, val decoder: Jaxb2SoapD
 
     fun <T> postSoapRequestCustomContentType(
         url: String,
-        headersConsumer: Consumer<HttpHeaders>,
+        headersConsumer: (HttpHeaders) -> Unit,
         request: Any,
         requestClass: Class<*>,
         responseClass: Class<T>,
@@ -143,7 +143,7 @@ class SoapWebClientHelper(val encoder: Jaxb2SoapEncoder, val decoder: Jaxb2SoapD
 
     fun <T> postSoapRequestCustomContentType(
         url: String,
-        headersConsumer: Consumer<HttpHeaders>,
+        headersConsumer: (HttpHeaders) -> Unit,
         request: Any,
         requestClass: Class<*>,
         responseClass: ParameterizedTypeReference<SoapEnvelopeResponse<T>>,
