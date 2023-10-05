@@ -1,4 +1,4 @@
-package ru.greatstep.model
+package ru.greatstep.helper.model
 
 import jakarta.xml.bind.annotation.XmlRootElement
 import org.w3c.dom.Document

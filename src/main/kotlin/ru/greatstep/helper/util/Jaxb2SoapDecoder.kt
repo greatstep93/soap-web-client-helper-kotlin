@@ -1,4 +1,4 @@
-package ru.greatstep.util
+package ru.greatstep.helper.util
 
 import jakarta.xml.bind.JAXBException
 import jakarta.xml.bind.UnmarshalException
@@ -15,11 +15,10 @@ import org.springframework.ws.WebServiceMessageFactory
 import org.springframework.ws.client.core.WebServiceTemplate
 import org.springframework.ws.support.DefaultStrategiesHelper
 import reactor.core.Exceptions
-import ru.greatstep.model.JaxbContextContainer
-import ru.greatstep.model.SoapEnvelopeResponse
+import ru.greatstep.helper.model.JaxbContextContainer
+import ru.greatstep.helper.model.SoapEnvelopeResponse
 import javax.xml.stream.XMLStreamException
 import javax.xml.transform.dom.DOMSource
-import kotlin.reflect.KClass
 
 @Component
 class Jaxb2SoapDecoder(val jaxbContext: JaxbContextContainer = JaxbContextContainer) : Jaxb2XmlDecoder() {
@@ -41,7 +40,7 @@ class Jaxb2SoapDecoder(val jaxbContext: JaxbContextContainer = JaxbContextContai
             return if (targetType.rawClass?.typeName == RESPONSE_WITH_HEADERS) {
                 unmarshalWithHeaders(message, targetType)
             } else {
-                unmarshal(message, targetType::class)
+                unmarshal(message, targetType.toClass())
             }
 
         } catch (ex: Exception) {
@@ -57,14 +56,14 @@ class Jaxb2SoapDecoder(val jaxbContext: JaxbContextContainer = JaxbContextContai
 
     private fun unmarshalWithHeaders(message: WebServiceMessage, targetType: ResolvableType) =
         SoapEnvelopeResponse(
-            unmarshal(message, targetType.generics[0].toClass().kotlin),
+            unmarshal(message, targetType.generics[0].toClass()),
             (message.payloadSource as DOMSource).node.ownerDocument
         )
 
 
-    private fun unmarshal(message: WebServiceMessage, outputClass: KClass<out Any>): Any {
+    private fun unmarshal(message: WebServiceMessage, outputClass: Class<*>): Any {
         try {
-            return getUnmarshaller(outputClass).unmarshal(message.payloadSource, outputClass.java).value
+            return getUnmarshaller(outputClass).unmarshal(message.payloadSource, outputClass).value
         } catch (ex: UnmarshalException) {
             throw DecodingException("Could not unmarshal XML to $outputClass", ex)
         } catch (ex: JAXBException) {
@@ -72,6 +71,6 @@ class Jaxb2SoapDecoder(val jaxbContext: JaxbContextContainer = JaxbContextContai
         }
     }
 
-    private fun getUnmarshaller(outputClass: KClass<out Any>) =
+    private fun getUnmarshaller(outputClass: Class<*>) =
         unmarshallerProcessor.apply(this.jaxbContext.createUnmarshaller(outputClass))
 }

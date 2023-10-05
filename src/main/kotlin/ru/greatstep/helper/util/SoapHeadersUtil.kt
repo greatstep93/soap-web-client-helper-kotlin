@@ -1,4 +1,4 @@
-package ru.greatstep.util
+package ru.greatstep.helper.util
 
 import org.w3c.dom.Document
 

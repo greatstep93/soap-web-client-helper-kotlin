@@ -1,4 +1,4 @@
-package ru.greatstep
+package ru.greatstep.helper
 
 import io.netty.channel.ChannelOption
 import io.netty.handler.timeout.ReadTimeoutHandler
@@ -15,33 +15,14 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClient.Builder
 import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
-import ru.greatstep.model.SoapEnvelopeResponse
-import ru.greatstep.util.Jaxb2SoapDecoder
-import ru.greatstep.util.Jaxb2SoapEncoder
+import ru.greatstep.helper.model.SoapEnvelopeResponse
+import ru.greatstep.helper.util.Jaxb2SoapDecoder
+import ru.greatstep.helper.util.Jaxb2SoapEncoder
 import java.util.concurrent.TimeUnit
-import java.util.function.Consumer
+import kotlin.reflect.KClass
 
 @Component
 class SoapWebClientHelper(val encoder: Jaxb2SoapEncoder, val decoder: Jaxb2SoapDecoder) {
-
-    fun getSoapBuilder(): Builder {
-        val connector = ReactorClientHttpConnector(
-            HttpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                .doOnConnected {
-                    it.addHandlerFirst(ReadTimeoutHandler(5000, TimeUnit.MILLISECONDS))
-                        .addHandlerLast(WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS))
-                }.wiretap(true)
-        )
-        val exchangeStrategies = ExchangeStrategies.builder()
-            .codecs { it.customCodecs().register(encoder) }
-            .codecs { it.customCodecs().register(decoder) }
-            .build()
-
-        return WebClient.builder()
-            .exchangeStrategies(exchangeStrategies)
-            .clientConnector(connector)
-    }
 
     fun getSoapBuilder(timeout: Int): Builder {
         val connector = ReactorClientHttpConnector(
@@ -62,51 +43,32 @@ class SoapWebClientHelper(val encoder: Jaxb2SoapEncoder, val decoder: Jaxb2SoapD
             .clientConnector(connector)
     }
 
-    fun <T> postSoapRequest(
+    fun <T : Any> postSoapRequest(
         url: String,
         headersConsumer: (HttpHeaders) -> Unit,
         request: Any,
-        requestClass: Class<*>,
-        responseClass: Class<T>,
-        errorHandler: (ClientResponse) -> Mono<out Throwable>
-    ): Mono<T> {
-        return getSoapBuilder().build()
-            .post()
-            .uri(url)
-            .headers(headersConsumer)
-            .contentType(TEXT_XML)
-            .body(Mono.just(request), requestClass)
-            .retrieve()
-            .onStatus(HttpStatusCode::isError, errorHandler)
-            .bodyToMono(responseClass)
-    }
-
-    fun <T> postSoapRequest(
-        url: String,
-        headersConsumer: (HttpHeaders) -> Unit,
-        request: Any,
-        requestClass: Class<*>,
-        responseClass: Class<T>,
+        requestClass: KClass<*>,
+        responseClass: KClass<T>,
         errorHandler: (ClientResponse) -> Mono<out Throwable>,
         timeoutMillis: Int
-    ): Mono<T> {
+    ): Mono<out T> {
         return getSoapBuilder(timeoutMillis).build()
             .post()
             .uri(url)
             .headers(headersConsumer)
             .contentType(TEXT_XML)
-            .body(Mono.just(request), requestClass)
+            .body(Mono.just(request), requestClass.java)
             .retrieve()
             .onStatus(HttpStatusCode::isError, errorHandler)
-            .bodyToMono(responseClass)
+            .bodyToMono(responseClass.java)
     }
 
 
-    fun <T> postSoapRequest(
+    fun <T> postSoapRequestWithHeaders(
         url: String,
         headersConsumer: (HttpHeaders) -> Unit,
         request: Any,
-        requestClass: Class<*>,
+        requestClass: KClass<*>,
         responseClass: ParameterizedTypeReference<SoapEnvelopeResponse<T>>,
         errorHandler: (ClientResponse) -> Mono<out Throwable>,
         timeoutMillis: Int
@@ -116,7 +78,7 @@ class SoapWebClientHelper(val encoder: Jaxb2SoapEncoder, val decoder: Jaxb2SoapD
             .uri(url)
             .headers(headersConsumer)
             .contentType(TEXT_XML)
-            .body(Mono.just(request), requestClass)
+            .body(Mono.just(request), requestClass.java)
             .retrieve()
             .onStatus(HttpStatusCode::isError, errorHandler)
             .bodyToMono(responseClass)
@@ -126,7 +88,7 @@ class SoapWebClientHelper(val encoder: Jaxb2SoapEncoder, val decoder: Jaxb2SoapD
         url: String,
         headersConsumer: (HttpHeaders) -> Unit,
         request: Any,
-        requestClass: Class<*>,
+        requestClass: KClass<*>,
         responseClass: Class<T>,
         errorHandler: (ClientResponse) -> Mono<out Throwable>,
         timeoutMillis: Int
@@ -135,17 +97,17 @@ class SoapWebClientHelper(val encoder: Jaxb2SoapEncoder, val decoder: Jaxb2SoapD
             .post()
             .uri(url)
             .headers(headersConsumer)
-            .body(Mono.just(request), requestClass)
+            .body(Mono.just(request), requestClass.java)
             .retrieve()
             .onStatus(HttpStatusCode::isError, errorHandler)
             .bodyToMono(responseClass)
     }
 
-    fun <T> postSoapRequestCustomContentType(
+    fun <T> postSoapRequestCustomContentTypeWithHeaders(
         url: String,
         headersConsumer: (HttpHeaders) -> Unit,
         request: Any,
-        requestClass: Class<*>,
+        requestClass: KClass<*>,
         responseClass: ParameterizedTypeReference<SoapEnvelopeResponse<T>>,
         errorHandler: (ClientResponse) -> Mono<out Throwable>,
         timeoutMillis: Int
@@ -154,7 +116,7 @@ class SoapWebClientHelper(val encoder: Jaxb2SoapEncoder, val decoder: Jaxb2SoapD
             .post()
             .uri(url)
             .headers(headersConsumer)
-            .body(Mono.just(request), requestClass)
+            .body(Mono.just(request), requestClass.java)
             .retrieve()
             .onStatus(HttpStatusCode::isError, errorHandler)
             .bodyToMono(responseClass)

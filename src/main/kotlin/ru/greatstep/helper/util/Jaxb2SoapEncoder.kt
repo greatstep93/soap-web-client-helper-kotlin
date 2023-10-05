@@ -1,4 +1,4 @@
-package ru.greatstep.util
+package ru.greatstep.helper.util
 
 import jakarta.xml.bind.JAXBException
 import jakarta.xml.bind.Marshaller
@@ -21,8 +21,8 @@ import org.springframework.ws.client.core.WebServiceTemplate
 import org.springframework.ws.support.DefaultStrategiesHelper
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import ru.greatstep.model.JaxbContextContainer
-import ru.greatstep.model.SoapEnvelopeRequest
+import ru.greatstep.helper.model.JaxbContextContainer
+import ru.greatstep.helper.model.SoapEnvelopeRequest
 import java.nio.charset.StandardCharsets
 import java.rmi.MarshalException
 import kotlin.reflect.KClass
@@ -30,8 +30,9 @@ import kotlin.reflect.KClass
 @Component
 class Jaxb2SoapEncoder(val jaxbContext: JaxbContextContainer = JaxbContextContainer) : Encoder<Any> {
     override fun canEncode(elementType: ResolvableType, mimeType: MimeType?): Boolean {
-        return elementType::class.annotations.filterIsInstance<XmlRootElement?>().isNotEmpty()
-                || elementType::class.annotations.filterIsInstance<XmlType?>().isNotEmpty()
+        return elementType.toClass().annotations.filterIsInstance<XmlRootElement>().isNotEmpty()
+                ||
+                elementType.toClass().annotations.filterIsInstance<XmlType>().isNotEmpty()
     }
 
     override fun getEncodableMimeTypes(): List<MimeType> {
@@ -61,7 +62,7 @@ class Jaxb2SoapEncoder(val jaxbContext: JaxbContextContainer = JaxbContextContai
                 val message = DefaultStrategiesHelper(WebServiceTemplate::class.java)
                     .getDefaultStrategy(WebServiceMessageFactory::class.java)
                     .createWebServiceMessage()
-                initMarshaller(value.body::class).marshal(value.body,message.payloadResult)
+                initMarshaller(value.body::class).marshal(value.body, message.payloadResult)
                 message.writeTo(buffer.asOutputStream())
                 release = false
                 return@fromCallable buffer

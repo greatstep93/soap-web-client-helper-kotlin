@@ -1,4 +1,4 @@
-package ru.greatstep.util
+package ru.greatstep.helper.util
 
 import java.time.OffsetDateTime
 import java.time.ZonedDateTime

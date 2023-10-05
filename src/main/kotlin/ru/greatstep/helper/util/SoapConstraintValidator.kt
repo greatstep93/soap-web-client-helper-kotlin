@@ -1,4 +1,4 @@
-package ru.greatstep.util
+package ru.greatstep.helper.util
 
 import jakarta.xml.bind.JAXBElement
 import jakarta.xml.bind.annotation.XmlElement

@@ -24,9 +24,10 @@ plugins {
 }
 
 group = "ru.greatstep"
-version = "v1.1.0"
+version = "v1.1.1"
 java {
     sourceCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
 }
 
 tasks.bootJar {
@@ -52,18 +53,22 @@ repositories {
 }
 
 val kotlinCoroutinesVersion = "1.8.10"
-
+var kotlinVersion = "1.9.10"
 dependencies {
     //SPRING
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.ws:spring-ws-core")
+
+
+    //Kotlin
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive")
+    runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactive")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     annotationProcessor("org.jetbrains.kotlin:kotlin-reflect")
     compileOnly("org.jetbrains.kotlin:kotlin-reflect")
+
     /* LOMBOK */
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")

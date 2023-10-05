@@ -1,4 +1,4 @@
-package ru.greatstep.exception
+package ru.greatstep.helper.exception
 
 /**
  * Ошибка парсинга SOAP запроса или ответа
