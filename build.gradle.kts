@@ -23,8 +23,8 @@ plugins {
     id("maven-publish")
 }
 
-group = "ru.rtech"
-version = "v1.0.9"
+group = "ru.greatstep"
+version = "v1.1.0"
 java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
